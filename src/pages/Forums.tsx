@@ -117,7 +117,7 @@ export const Forums = () => {
         .insert({
           title: newTopic.title,
           content: newTopic.content,
-          subject_id: newTopic.subjectId || null,
+          subject_id: newTopic.subjectId === 'none' ? null : newTopic.subjectId || null,
           created_by: user?.id,
           is_pinned: false,
           is_locked: false,
@@ -205,7 +205,7 @@ export const Forums = () => {
                       <SelectValue placeholder="Select a subject" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">No specific subject</SelectItem>
+                      <SelectItem value="none">No specific subject</SelectItem>
                       {subjects.map((subject: any) => (
                         <SelectItem key={subject.id} value={subject.id}>
                           {subject.name}
