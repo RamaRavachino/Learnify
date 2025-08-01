@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
-import { Search as SearchIcon, Download, Star, Filter, FileText } from 'lucide-react';
+import { Search as SearchIcon, Download, Star, Filter, FileText, Coins, Crown } from 'lucide-react';
 import Fuse from 'fuse.js';
 
 export const Search = () => {
@@ -16,12 +16,59 @@ export const Search = () => {
   const [filteredNotes, setFilteredNotes] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [userCredits, setUserCredits] = useState(45); // Ejemplo de créditos del usuario
   const [filters, setFilters] = useState({
     subject: '',
     university: '',
     fileType: '',
     rating: '',
   });
+
+  // Ejemplos de resúmenes premium que cuestan créditos
+  const premiumSummaries = [
+    {
+      id: 'premium-1',
+      title: 'Resumen Completo: Análisis Numérico - Métodos de Interpolación',
+      description: 'Resumen completo de 25 páginas que cubre todos los métodos de interpolación: Lagrange, Newton, splines cúbicos y aplicaciones prácticas.',
+      credits: 20,
+      pages: 25,
+      subjects: { name: 'Matemáticas' },
+      profiles: { first_name: 'Dr. Carlos', last_name: 'Rodríguez', university: 'UBA' },
+      file_type: 'PDF',
+      average_rating: 4.8,
+      download_count: 156,
+      tags: ['interpolación', 'métodos numéricos', 'matemáticas'],
+      isPremium: true
+    },
+    {
+      id: 'premium-2', 
+      title: 'Guía Premium: Cálculo Integral Avanzado',
+      description: 'Resumen detallado de 30 páginas con ejercicios resueltos, teoremas principales y aplicaciones en física e ingeniería.',
+      credits: 25,
+      pages: 30,
+      subjects: { name: 'Cálculo' },
+      profiles: { first_name: 'Dra. Ana', last_name: 'Martínez', university: 'UTN' },
+      file_type: 'PDF',
+      average_rating: 4.9,
+      download_count: 203,
+      tags: ['integrales', 'cálculo', 'ejercicios'],
+      isPremium: true
+    },
+    {
+      id: 'premium-3',
+      title: 'Resumen Ejecutivo: Programación en Python - Estructuras de Datos',
+      description: 'Compilación de 22 páginas con ejemplos prácticos, algoritmos optimizados y mejores prácticas para estructuras de datos.',
+      credits: 18,
+      pages: 22,
+      subjects: { name: 'Programación' },
+      profiles: { first_name: 'Ing. Miguel', last_name: 'López', university: 'UADE' },
+      file_type: 'PDF',
+      average_rating: 4.7,
+      download_count: 89,
+      tags: ['python', 'estructuras de datos', 'algoritmos'],
+      isPremium: true
+    }
+  ];
 
   const fuse = new Fuse(notes, {
     keys: ['title', 'description', 'tags', 'subjects.name', 'profiles.first_name', 'profiles.last_name'],
@@ -146,12 +193,39 @@ export const Search = () => {
     setSearchParams({});
   };
 
+  const handlePremiumDownload = (summary: any) => {
+    if (userCredits >= summary.credits) {
+      setUserCredits(prev => prev - summary.credits);
+      // Aquí iría la lógica de descarga real
+      alert(`¡Descarga exitosa! Te han sido descontados ${summary.credits} créditos.`);
+    } else {
+      alert(`Necesitas ${summary.credits - userCredits} créditos más para descargar este resumen.`);
+    }
+  };
+
+  // Combinar todas las notas y resúmenes para la búsqueda
+  const allResults = searchQuery.trim() 
+    ? [...filteredNotes, ...premiumSummaries.filter(summary => 
+        summary.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        summary.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        summary.subjects.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )]
+    : [...filteredNotes, ...premiumSummaries];
+
   return (
     <div className="space-y-6">
       {/* Search Header */}
       <div className="bg-gradient-to-r from-primary to-primary-hover rounded-lg p-6 text-white">
-        <h1 className="text-3xl font-bold mb-2">Search Study Materials</h1>
-        <p className="text-white/90 mb-4">Find notes, documents, and resources shared by students</p>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Search Study Materials</h1>
+            <p className="text-white/90">Find notes, documents, and resources shared by students</p>
+          </div>
+          <div className="flex items-center bg-white/10 rounded-lg px-4 py-2 backdrop-blur-sm">
+            <Coins className="h-5 w-5 text-yellow-300 mr-2" />
+            <span className="text-lg font-semibold">{userCredits} créditos</span>
+          </div>
+        </div>
         
         <div className="flex gap-2">
           <div className="flex-1 relative">
@@ -251,7 +325,7 @@ export const Search = () => {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">
-            {loading ? 'Searching...' : `${filteredNotes.length} results found`}
+            {loading ? 'Searching...' : `${allResults.length} results found`}
           </h2>
         </div>
 
@@ -272,37 +346,47 @@ export const Search = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredNotes.map((note: any) => (
-              <Card key={note.id} className="hover:shadow-lg transition-shadow">
+            {allResults.map((item: any) => (
+              <Card key={item.id} className={`hover:shadow-lg transition-shadow ${item.isPremium ? 'border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50' : ''}`}>
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <CardTitle className="text-lg line-clamp-2">{note.title}</CardTitle>
+                      <CardTitle className="text-lg line-clamp-2 flex items-center">
+                        {item.isPremium && <Crown className="h-4 w-4 text-amber-500 mr-1 flex-shrink-0" />}
+                        {item.title}
+                      </CardTitle>
                       <CardDescription className="mt-1">
-                        by {note.profiles?.first_name} {note.profiles?.last_name}
+                        by {item.profiles?.first_name} {item.profiles?.last_name}
                       </CardDescription>
                       <CardDescription className="text-xs">
-                        {note.profiles?.university}
+                        {item.profiles?.university}
                       </CardDescription>
                     </div>
-                    <Badge variant="secondary">{note.subjects?.name}</Badge>
+                    <div className="flex flex-col items-end gap-1">
+                      <Badge variant="secondary">{item.subjects?.name}</Badge>
+                      {item.isPremium && (
+                        <Badge variant="outline" className="text-amber-600 border-amber-300">
+                          Premium
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
-                    {note.description}
+                    {item.description}
                   </p>
                   
-                  {note.tags && (
+                  {item.tags && (
                     <div className="flex flex-wrap gap-1 mb-4">
-                      {note.tags.slice(0, 3).map((tag: string) => (
+                      {item.tags.slice(0, 3).map((tag: string) => (
                         <Badge key={tag} variant="outline" className="text-xs">
                           {tag}
                         </Badge>
                       ))}
-                      {note.tags.length > 3 && (
+                      {item.tags.length > 3 && (
                         <Badge variant="outline" className="text-xs">
-                          +{note.tags.length - 3} more
+                          +{item.tags.length - 3} more
                         </Badge>
                       )}
                     </div>
@@ -312,21 +396,35 @@ export const Search = () => {
                     <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                       <div className="flex items-center">
                         <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                        {note.average_rating?.toFixed(1) || 'N/A'}
+                        {item.average_rating?.toFixed(1) || 'N/A'}
                       </div>
                       <div className="flex items-center">
                         <Download className="h-4 w-4 mr-1" />
-                        {note.download_count || 0}
+                        {item.download_count || 0}
                       </div>
                       <div className="flex items-center">
                         <FileText className="h-4 w-4 mr-1" />
-                        {note.file_type.toUpperCase()}
+                        {item.file_type?.toUpperCase()}
+                        {item.isPremium && ` (${item.pages}p)`}
                       </div>
                     </div>
-                    <Button size="sm" onClick={() => handleDownload(note)}>
-                      <Download className="h-4 w-4 mr-1" />
-                      Download
-                    </Button>
+                    
+                    {item.isPremium ? (
+                      <Button 
+                        size="sm" 
+                        onClick={() => handlePremiumDownload(item)}
+                        variant={userCredits >= item.credits ? "default" : "outline"}
+                        disabled={userCredits < item.credits}
+                      >
+                        <Coins className="h-4 w-4 mr-1" />
+                        {item.credits} créditos
+                      </Button>
+                    ) : (
+                      <Button size="sm" onClick={() => handleDownload(item)}>
+                        <Download className="h-4 w-4 mr-1" />
+                        Download
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -334,7 +432,7 @@ export const Search = () => {
           </div>
         )}
 
-        {!loading && filteredNotes.length === 0 && (
+        {!loading && allResults.length === 0 && (
           <Card className="text-center py-12">
             <CardContent>
               <SearchIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
