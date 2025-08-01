@@ -22,14 +22,14 @@ export const Forums = () => {
   const exampleTopics = [
     {
       id: 'example-1',
-      title: 'Análisis numérico - Métodos de interpolación',
-      content: '¿Alguien podría ayudarme a entender las diferencias entre interpolación de Lagrange y Newton? Estoy trabajando en un proyecto que requiere aproximar funciones y no estoy seguro cuál método sería más eficiente.',
+      title: 'Análisis numérico - Ayuda con Singularidades',
+      content: '¿Alguien podría ayudarme a entender cuando se refiere a un punto donde una función o sistema se vuelve indefinido, infinito o discontinuo',
       created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
       last_reply_at: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
       reply_count: 5,
       is_pinned: false,
       is_locked: false,
-      profiles: { first_name: 'María', last_name: 'González' },
+      profiles: { first_name: 'Ramiro', last_name: 'Ravachino' },
       subjects: { name: 'Matemáticas' }
     },
     {
@@ -41,19 +41,19 @@ export const Forums = () => {
       reply_count: 3,
       is_pinned: true,
       is_locked: false,
-      profiles: { first_name: 'Carlos', last_name: 'Pérez' },
+      profiles: { first_name: 'Bautista', last_name: 'Budano' },
       subjects: { name: 'Cálculo' }
     },
     {
       id: 'example-3',
       title: 'Recomendaciones de recursos para aprender programación',
-      content: 'Soy nuevo en programación y me gustaría que me recomienden recursos, libros o cursos online que sean buenos para principiantes. Especialmente interesado en Python.',
+      content: 'Soy nuevo en programación y me gustaría que me recomienden cursos, libros o cursos online que sean buenos para principiantes. Especialmente interesado en Python.',
       created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
       last_reply_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
       reply_count: 8,
       is_pinned: false,
       is_locked: false,
-      profiles: { first_name: 'Ana', last_name: 'Martínez' },
+      profiles: { first_name: 'Frabrizio', last_name: 'Perrino' },
       subjects: { name: 'Programación' }
     }
   ];
