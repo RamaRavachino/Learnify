@@ -17,6 +17,46 @@ export const Forums = () => {
   const [topics, setTopics] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Example topics for demonstration
+  const exampleTopics = [
+    {
+      id: 'example-1',
+      title: 'Análisis numérico - Métodos de interpolación',
+      content: '¿Alguien podría ayudarme a entender las diferencias entre interpolación de Lagrange y Newton? Estoy trabajando en un proyecto que requiere aproximar funciones y no estoy seguro cuál método sería más eficiente.',
+      created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      last_reply_at: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+      reply_count: 5,
+      is_pinned: false,
+      is_locked: false,
+      profiles: { first_name: 'María', last_name: 'González' },
+      subjects: { name: 'Matemáticas' }
+    },
+    {
+      id: 'example-2',
+      title: 'Dudas sobre integrales dobles en cálculo vectorial',
+      content: 'Tengo dificultades para visualizar las regiones de integración en coordenadas polares. ¿Hay algún truco o método que me ayude a entender mejor estos conceptos?',
+      created_at: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+      last_reply_at: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+      reply_count: 3,
+      is_pinned: true,
+      is_locked: false,
+      profiles: { first_name: 'Carlos', last_name: 'Pérez' },
+      subjects: { name: 'Cálculo' }
+    },
+    {
+      id: 'example-3',
+      title: 'Recomendaciones de recursos para aprender programación',
+      content: 'Soy nuevo en programación y me gustaría que me recomienden recursos, libros o cursos online que sean buenos para principiantes. Especialmente interesado en Python.',
+      created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      last_reply_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+      reply_count: 8,
+      is_pinned: false,
+      is_locked: false,
+      profiles: { first_name: 'Ana', last_name: 'Martínez' },
+      subjects: { name: 'Programación' }
+    }
+  ];
   const [searchQuery, setSearchQuery] = useState('');
   const [createTopicOpen, setCreateTopicOpen] = useState(false);
   const [newTopic, setNewTopic] = useState({
@@ -97,7 +137,10 @@ export const Forums = () => {
     }
   };
 
-  const filteredTopics = topics.filter(topic =>
+  // Combine real topics with example topics if no real topics exist
+  const allTopics = topics.length > 0 ? topics : exampleTopics;
+  
+  const filteredTopics = allTopics.filter(topic =>
     topic.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     topic.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
     topic.subjects?.name.toLowerCase().includes(searchQuery.toLowerCase())
